@@ -1,0 +1,23 @@
+/* document-table.component.scss */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  table {
+    width: 100%;
+  }
+  
+  thead {
+    font-weight: bold;
+  }
+  
+  th, td {
+    text-align: center;
+  }
+  
+  .btn-group {
+    display: flex;
+    justify-content: center;
+  }
+  
