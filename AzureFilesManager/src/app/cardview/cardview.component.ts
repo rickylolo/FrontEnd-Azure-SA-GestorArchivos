@@ -19,7 +19,7 @@ export class CardviewComponent {
       const formData = new FormData();
       formData.append('file', file);
 
-      this.http.post('URL_DEL_ENDPOINT', formData).subscribe(
+      this.http.post('https://localhost:3001/api/file', formData).subscribe(
         (response) => {
           console.log('Archivo subido exitosamente', response);
         },
