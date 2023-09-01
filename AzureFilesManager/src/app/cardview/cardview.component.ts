@@ -1,81 +1,63 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-interface FileUploadData {
-  fileName: string;
-  fileType: string;
-  fileContent: string;
-}
-
 @Component({
   selector: 'app-cardview',
   templateUrl: './cardview.component.html',
   styleUrls: ['./cardview.component.css'],
 })
 export class CardviewComponent {
+  pdfBase64:string = "";
+  fileName: string ="";
+  fileExtension:string = "";
+  fileSize:string = "";
+  base64Data:string = "";
+  fileType:string = "";
+
   archivoCargado = false;
 
   constructor(private http: HttpClient) {} // Inyectar HttpClient
 
-  uploadFile(): void {
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-    if (fileInput && fileInput.files && fileInput.files.length > 0) {
-      const file = fileInput.files[0];
-
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const uploadData: FileUploadData = {
-        fileName: file.name,
-        fileType: file.type,
-        fileContent: '', // Placeholder para el contenido en base64
-      };
-
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        uploadData.fileContent = e.target.result.split(',')[1]; // Obtener contenido en base64
-        this.sendFile(uploadData);
-      };
-      reader.readAsDataURL(file);
+  sendFile(): void {
+    const requestData={
+      fileName:this.fileName,
+      fileType:this.fileType,
+      fileContent:this.base64Data,
     }
-  }
 
-  sendFile(uploadData: FileUploadData): void {
-    console.log(uploadData);
-  
-    this.http.post('http://localhost:3001/file', JSON.stringify(uploadData), {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }).subscribe(
+    this.http.post('http://localhost:3001/file', requestData).subscribe(
       (response) => {
-        console.log('Archivo subido exitosamente', response);
+        console.log('Archivo subido exitosamente');
       },
       (error) => {
         console.error('Error al subir el archivo', error);
       }
     );
   }
-  
 
+
+  
   handleFileInput(event: any): void {
     this.archivoCargado = true;
     const file = event.target.files[0];
-
+  
     if (file) {
-      const fileName = file.name;
-      const fileExtension = fileName.split('.').pop();
-      const fileSize = file.size;
-
+      this.fileName = file.name;
+      
+      // Verificar si la extensión está presente antes de asignarla
+      this.fileType = this.fileName.split('.')[1];
+      
+  
+      this.fileSize = file.size.toString();
+  
       const reader = new FileReader();
       reader.onload = (e: any) => {
         const base64Data = e.target.result;
-        console.log('Nombre:', fileName);
-        console.log('Extensión:', fileExtension);
-        console.log('Tamaño:', fileSize, 'bytes');
-        //console.log('Datos en Base64:', base64Data);
+        const base64Body = base64Data.split(",")[1];
+        this.base64Data=base64Body;
       };
       reader.readAsDataURL(file);
     }
   }
+  
 }
